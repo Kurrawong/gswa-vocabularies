@@ -1,4 +1,4 @@
-name: Push
+name: Deploy vocabularies to event system
 
 on:
   workflow_dispatch:
