@@ -1,0 +1,50 @@
+name: Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic_name:
+        description: "Service Bus topic name"
+        required: false
+        default: "input"
+      subscription_name:
+        description: "Service Bus subscription name"
+        required: false
+        default: "default"
+
+env:
+  TOPIC_NAME: ${{ inputs.topic_name || 'input' }}
+  SUBSCRIPTION_NAME: ${{ inputs.subscription_name || 'default' }}
+
+jobs:
+  manifest-sync:
+    environment: production
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.10"
+          enable-cache: true
+
+      - name: Install Python with uv
+        run: |
+          PY_VERSION="$(cat .python-version)"
+          uv python install "${PY_VERSION}"
+          echo "UV_PYTHON_PATH=$(uv python find "${PY_VERSION}")" >> "${GITHUB_ENV}"
+
+      - name: Install prezmanifest CLI
+        run: uv tool install --force "git+https://github.com/Kurrawong/prezmanifest.git@7731b6116a7d800aea5857add2aa3c58821f1d96#egg=prezmanifest[azure]"
+
+      - name: Sync manifest to event system
+        run: |
+          pm event sync azure-service-bus \
+            manifest.ttl \
+            http://fuseki.event-system.internal/gswads \
+            "${{ secrets.SERVICE_BUS_CONNECTION_STRING }}" \
+            "${{ env.TOPIC_NAME }}" \
+            "${{ env.SUBSCRIPTION_NAME }}" \
+            main
