@@ -41,7 +41,7 @@ jobs:
 
       - name: Sync manifest to event system
         run: |
-          pm event sync azure-service-bus \
+          PM_LOG_LEVEL=INFO pm event sync azure-service-bus \
             manifest.ttl \
             http://fuseki.event-system.internal/gswads \
             "${{ secrets.SERVICE_BUS_CONNECTION_STRING }}" \
