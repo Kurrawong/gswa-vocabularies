@@ -37,7 +37,7 @@ jobs:
           echo "UV_PYTHON_PATH=$(uv python find "${PY_VERSION}")" >> "${GITHUB_ENV}"
 
       - name: Install prezmanifest CLI
-        run: uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@refs/pull/39/head#egg=prezmanifest[azure]"
+        run: uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@26b1b383cb5f2b3882f2bc73b644dc3e59c53f34#egg=prezmanifest[azure]"
 
       - name: Sync manifest to event system
         run: |
