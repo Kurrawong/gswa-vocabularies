@@ -1,0 +1,58 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  name: gswadevpool
+
+variables:
+  - group: vocabs-dev
+  - name: PY_VERSION
+    value: "3.14"
+  - name: TOPIC_NAME
+    value: "input"
+  - name: SUBSCRIPTION_NAME
+    value: "default"
+
+steps:
+  - checkout: self
+
+  - script: |
+      set -euo pipefail
+      if ! command -v uv >/dev/null 2>&1; then
+        if command -v curl >/dev/null 2>&1; then
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+        elif command -v wget >/dev/null 2>&1; then
+          wget -qO- https://astral.sh/uv/install.sh | sh
+        else
+          echo "Missing curl or wget; install one of them on the agent." >&2
+          exit 1
+        fi
+      fi
+      echo "##vso[task.prependpath]$HOME/.local/bin"
+    displayName: Install uv
+
+  - script: |
+      set -euo pipefail
+      uv python install "${PY_VERSION}"
+      echo "##vso[task.setvariable variable=UV_PYTHON_PATH]$(uv python find "${PY_VERSION}")"
+    displayName: Install Python with uv
+
+  - script: |
+      set -euo pipefail
+      uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@ee9872f3d6663a855618f3d18ad81c77c286f6fe#egg=prezmanifest[azure]"
+    displayName: Install prezmanifest CLI
+
+  - script: |
+      set -euo pipefail
+      PM_LOG_LEVEL=INFO pm event sync azure-service-bus \
+        manifest.ttl \
+        http://fuseki.event-system.internal/gswads \
+        "${SERVICE_BUS_CONNECTION_STRING}" \
+        "${TOPIC_NAME}" \
+        "${SUBSCRIPTION_NAME}" \
+        main
+    displayName: Sync manifest to event system
