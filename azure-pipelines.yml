@@ -56,3 +56,5 @@ steps:
         "${SUBSCRIPTION_NAME}" \
         main
     displayName: Sync manifest to event system
+    env:
+      SERVICE_BUS_CONNECTION_STRING: $(SERVICE_BUS_CONNECTION_STRING)
