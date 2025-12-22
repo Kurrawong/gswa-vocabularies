@@ -48,7 +48,7 @@ steps:
 
   - script: |
       set -euo pipefail
-      PM_LOG_LEVEL=INFO pm event sync azure-service-bus \
+      PM_LOG_LEVEL=DEBUG pm event sync azure-service-bus \
         manifest.ttl \
         http://fuseki.event-system.internal/gswads \
         "${SERVICE_BUS_CONNECTION_STRING}" \
