@@ -43,12 +43,12 @@ steps:
 
   - script: |
       set -euo pipefail
-      uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@75c0b9333e630d6e434710f0f96beefddf8c8bad#egg=prezmanifest[azure]"
+      uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@acc404c5bd1d6be8dcdf6e05958e80b0fbe35217#egg=prezmanifest[azure]"
     displayName: Install prezmanifest CLI
 
   - script: |
       set -euo pipefail
-      PM_LOG_LEVEL=DEBUG pm event sync azure-service-bus \
+      PM_LOG_LEVEL=INFO pm event sync azure-service-bus \
         manifest.ttl \
         http://fuseki.event-system.internal/gswads \
         "${SERVICE_BUS_CONNECTION_STRING}" \
