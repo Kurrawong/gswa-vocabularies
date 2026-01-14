@@ -43,7 +43,7 @@ steps:
 
   - script: |
       set -euo pipefail
-      uv tool install "git+https://github.com/Kurrawong/prezmanifest.git@c164a9aad1f82f73339ec3715569f13c10d2e891#egg=prezmanifest[azure]"
+      uv tool install "prezmanifest[azure]==1.2.0"
     displayName: Install prezmanifest CLI
 
   - script: |
